@@ -17,12 +17,9 @@ package compiler
 import (
 	"fmt"
 	"regexp"
-	"sort"
 	"strconv"
 
 	yaml "go.yaml.in/yaml/v3"
-
-	"github.com/google/gnostic-models/jsonschema"
 )
 
 // compiler helper functions, usually called from generated code
@@ -33,18 +30,6 @@ func UnpackMap(in *yaml.Node) (*yaml.Node, bool) {
 		return nil, false
 	}
 	return in, true
-}
-
-// SortedKeysForMap returns the sorted keys of a yamlv2.MapSlice.
-func SortedKeysForMap(m *yaml.Node) []string {
-	keys := make([]string, 0)
-	if m.Kind == yaml.MappingNode {
-		for i := 0; i < len(m.Content); i += 2 {
-			keys = append(keys, m.Content[i].Value)
-		}
-	}
-	sort.Strings(keys)
-	return keys
 }
 
 // MapHasKey returns true if a yamlv2.MapSlice contains a specified key.
@@ -77,18 +62,6 @@ func MapValueForKey(m *yaml.Node, key string) *yaml.Node {
 		}
 	}
 	return nil
-}
-
-// ConvertInterfaceArrayToStringArray converts an array of interfaces to an array of strings, if possible.
-func ConvertInterfaceArrayToStringArray(interfaceArray []interface{}) []string {
-	stringArray := make([]string, 0)
-	for _, item := range interfaceArray {
-		v, ok := item.(string)
-		if ok {
-			stringArray = append(stringArray, v)
-		}
-	}
-	return stringArray
 }
 
 // SequenceNodeForNode returns a node if it is a SequenceNode.
@@ -344,28 +317,6 @@ func StringArrayContainsValues(array []string, values []string) bool {
 		}
 	}
 	return true
-}
-
-// StringValue returns the string value of an item.
-func StringValue(item interface{}) (value string, ok bool) {
-	value, ok = item.(string)
-	if ok {
-		return value, ok
-	}
-	intValue, ok := item.(int)
-	if ok {
-		return strconv.Itoa(intValue), true
-	}
-	return "", false
-}
-
-// Description returns a human-readable represention of an item.
-func Description(item interface{}) string {
-	value, ok := item.(*yaml.Node)
-	if ok {
-		return jsonschema.Render(value)
-	}
-	return fmt.Sprintf("%+v", item)
 }
 
 // Display returns a description of a node for use in error messages.

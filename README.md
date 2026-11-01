@@ -1,28 +1,14 @@
-# ⨁ gnostic-models
+# Gnostic models lite
 
-This repository contains Protocol Buffer models and associated libraries
-for working with API description formats supported by
-[gnostic](https://github.com/google/gnostic). It exists to provide a
-lightweight distribution of these models with minimal dependencies.
-For more information, please see the
-[gnostic](https://github.com/google/gnostic) repository.
+This fork retains the upstream module path `github.com/google/gnostic-models`.
+It keeps OpenAPI v2 and v3 model types, their document readers, and the compiler
+and extension helpers those readers use. Protobuf messages use
+`protobuf-go-lite` without protobuf runtime reflection. Decoding always copies
+strings, including through the legacy `UnmarshalVTUnsafe` entry point.
 
-## Versions
+The discovery and JSON Schema models, extension executable entry point,
+code generators, generator inputs, build scripts and
+upstream automation are omitted. This is a focused subset rather than a drop-in
+replacement for every upstream package.
 
-Versions of this repository will be tagged with the **gnostic** version used
-to create them, e.g. "v0.7.0" will correspond to "v0.7.0" of **gnostic**.
-
-## Disclaimer
-
-Feedback and contributions are welcome! Until there is a 1.0 release, please
-consider this prerelease software and work in progress. To ensure stable
-builds, we request that dependent projects always refer to tagged releases of
-**gnostic**.
-
-## Copyright
-
-Copyright 2017-2025, Google LLC.
-
-## License
-
-Released under the Apache 2.0 license.
+Copyright 2017-2025 Google LLC. Licensed under the Apache License 2.0.

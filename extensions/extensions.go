@@ -19,11 +19,12 @@ import (
 	"log"
 	"os"
 
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/anypb"
+	"github.com/aperturerobotics/protobuf-go-lite/types/known/anypb"
 )
 
-type extensionHandler func(name string, yamlInput string) (bool, proto.Message, error)
+// extensionHandler handles one extension, returning its value already packed
+// in an Any, since protobuf-go-lite messages carry no type URL.
+type extensionHandler func(name string, yamlInput string) (bool, *anypb.Any, error)
 
 // Main implements the main program of an extension handler.
 func Main(handler extensionHandler) {
@@ -38,7 +39,7 @@ func Main(handler extensionHandler) {
 		os.Exit(1)
 	}
 	request := &ExtensionHandlerRequest{}
-	err = proto.Unmarshal(data, request)
+	err = request.UnmarshalVT(data)
 	if err != nil {
 		log.Println("Input error:", err.Error())
 		os.Exit(1)
@@ -54,11 +55,8 @@ func Main(handler extensionHandler) {
 		response.Errors = append(response.Errors, err.Error())
 	} else if handled {
 		response.Handled = true
-		response.Value, err = anypb.New(output)
-		if err != nil {
-			response.Errors = append(response.Errors, err.Error())
-		}
+		response.Value = output
 	}
-	responseBytes, _ := proto.Marshal(response)
+	responseBytes, _ := response.MarshalVT()
 	os.Stdout.Write(responseBytes)
 }

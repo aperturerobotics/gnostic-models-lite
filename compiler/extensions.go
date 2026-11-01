@@ -21,8 +21,7 @@ import (
 	"strings"
 
 	yaml "go.yaml.in/yaml/v3"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/anypb"
+	"github.com/aperturerobotics/protobuf-go-lite/types/known/anypb"
 
 	extensions "github.com/google/gnostic-models/extensions"
 )
@@ -65,7 +64,7 @@ func (extensionHandlers *ExtensionHandler) handle(in *yaml.Node, extensionName s
 				ExtensionName: extensionName,
 			},
 		}
-		requestBytes, _ := proto.Marshal(request)
+		requestBytes, _ := request.MarshalVT()
 		cmd := exec.Command(extensionHandlers.Name)
 		cmd.Stdin = bytes.NewReader(requestBytes)
 		output, err := cmd.Output()
@@ -73,7 +72,7 @@ func (extensionHandlers *ExtensionHandler) handle(in *yaml.Node, extensionName s
 			return nil, err
 		}
 		response := &extensions.ExtensionHandlerResponse{}
-		err = proto.Unmarshal(output, response)
+		err = response.UnmarshalVT(output)
 		if err != nil || !response.Handled {
 			return nil, err
 		}
